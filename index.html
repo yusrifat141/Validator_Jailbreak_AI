@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Jailbreak Detector</title>
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-deep: #050505;
+            --panel-bg: linear-gradient(145deg, #161616, #0e0e0e);
+            --text-main: #e0e0e0;
+            --text-dim: #707070;
+            --btn-face: linear-gradient(180deg, #2a2a2a, #1a1a1a);
+            --btn-shadow: #0a0a0a;
+            --c-green: #00ff9d;
+            --c-amber: #ffb800;
+            --c-red: #ff2a2a;
+            --c-error: #ff0000;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            background-color: var(--bg-deep);
+            background-image: 
+                linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+            background-size: 30px 30px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Rajdhani', sans-serif;
+            overflow: hidden;
+        }
+
+        /* --- Card UI --- */
+        .card-3d {
+            width: 300px;
+            background: var(--panel-bg);
+            box-shadow: 8px 8px 0px #000, -8px -8px 0px #1a1a1a;
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            position: relative;
+            border: 1px solid #222;
+            transition: border-color 0.2s;
+        }
+
+        /* Efek Error */
+        .card-error {
+            border: 1px solid var(--c-error);
+            animation: shake 0.3s;
+        }
+
+        @keyframes shake {
+            0% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            50% { transform: translateX(5px); }
+            75% { transform: translateX(-5px); }
+            100% { transform: translateX(0); }
+        }
+
+        .header-3d {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #222;
+        }
+
+        .title-text {
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            color: #fff;
+            text-transform: uppercase;
+        }
+
+        .status-led {
+            width: 8px; height: 8px;
+            background: #333;
+            border-radius: 50%;
+            border: 1px solid #000;
+        }
+
+        .input-wrapper {
+            display: flex;
+            justify-content: center;
+            width: 100%;
+        }
+
+        textarea {
+            width: 92%;
+            height: 65px;
+            background: #0a0a0a;
+            box-shadow: inset 3px 3px 0px #000, inset -2px -2px 0px #1a1a1a;
+            border: 1px solid #222;
+            border-radius: 6px;
+            color: #aaa;
+            font-family: 'Rajdhani', monospace;
+            font-size: 11px;
+            padding: 12px;
+            resize: none;
+            text-align: center;
+            transition: all 0.1s ease;
+        }
+
+        textarea:focus {
+            outline: none;
+            color: #fff;
+            border-color: #444;
+        }
+
+        textarea::placeholder {
+            color: #444;
+            font-weight: 600;
+        }
+
+        .btn-row {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+        }
+
+        .btn-3d {
+            flex: 1;
+            background: var(--btn-face);
+            border: none;
+            border-top: 1px solid #333;
+            border-left: 1px solid #333;
+            color: #ccc;
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 700;
+            font-size: 12px;
+            padding: 10px;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-radius: 6px;
+            box-shadow: 4px 4px 0px var(--btn-shadow);
+            transition: all 0.1s;
+            user-select: none;
+        }
+
+        .btn-3d:active {
+            transform: translate(2px, 2px);
+            box-shadow: 2px 2px 0px var(--btn-shadow);
+        }
+
+        .btn-3d:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+            background: #1a1a1a;
+        }
+
+        .btn-reset:hover {
+            color: var(--c-red);
+            border-color: var(--c-red);
+        }
+
+        .result-box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 10px;
+            border-top: 1px solid #222;
+        }
+
+        .hologram-ring {
+            width: 75px; height: 75px;
+            position: relative;
+            margin-bottom: 10px;
+        }
+
+        svg {
+            width: 100%; height: 100%;
+            transform: rotate(-90deg);
+        }
+
+        circle {
+            fill: none;
+            stroke-width: 5;
+        }
+
+        .ring-bg { stroke: #111; }
+        .ring-progress {
+            stroke: #333;
+            stroke-dasharray: 251;
+            stroke-dashoffset: 251;
+            transition: stroke-dashoffset 0.8s ease, stroke 0.3s;
+        }
+
+        .score-value {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 18px;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .info-3d { text-align: center; }
+        .info-title {
+            font-size: 12px;
+            font-weight: 700;
+            color: #fff;
+            margin: 0;
+        }
+        .info-desc {
+            font-size: 10px;
+            color: var(--text-dim);
+            margin: 4px 0 0 0;
+        }
+
+        .bar-container {
+            width: 92%;
+            height: 4px;
+            background: #080808;
+            border-radius: 10px;
+            box-shadow: inset 1px 1px 0px #000;
+            margin-top: 10px;
+            overflow: hidden;
+        }
+        
+        .bar-fill {
+            height: 100%;
+            width: 0%;
+            background: #fff;
+            border-radius: 10px;
+            transition: width 0.8s ease, background-color 0.3s;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="card-3d" id="mainCard">
+        <div class="header-3d">
+            <div class="title-text">SECURE_CORE</div>
+            <div class="status-led" id="led"></div>
+        </div>
+
+        <div class="input-wrapper">
+            <textarea id="promptInput" placeholder="> TYPE_HERE"></textarea>
+        </div>
+
+        <div class="btn-row">
+            <button class="btn-3d btn-scan" id="scanBtn" onclick="runCheck()">RUN</button>
+            <button class="btn-3d btn-reset" onclick="resetCheck()">WIPE</button>
+        </div>
+
+        <div class="result-box" id="resultBox">
+            <div class="hologram-ring">
+                <svg viewBox="0 0 100 100">
+                    <circle class="ring-bg" cx="50" cy="50" r="40"></circle>
+                    <circle class="ring-progress" id="ring" cx="50" cy="50" r="40"></circle>
+                </svg>
+                <div class="score-value" id="scoreVal">0%</div>
+            </div>
+
+            <div class="info-3d">
+                <div class="info-title" id="statTitle">STANDBY</div>
+                <div class="info-desc" id="statDesc">Ready</div>
+            </div>
+
+            <div class="bar-container">
+                <div class="bar-fill" id="barFill"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- DATABASE KATA KUNCI ---
+        const CRITICAL_KEYWORDS = [
+            "jailbreak", "bypass", "ignore", "override", "harmful", 
+            "illegal", "unrestricted", "developer mode", "do anything now", 
+            "roleplay", "root", "admin", "dan:", "dan "
+        ];
+
+        const BRUTAL_KEYWORDS = [
+            "violence", "hack", "brutal", "kill", "steal", "exploit", 
+            "malware", "dark", "cara", "membuat", "bom", "narkoba", "racun", 
+            "teroris", "porn", "xxx", "pedo"
+        ];
+
+        const SUSPICIOUS_KEYWORDS = [
+            "secret", "hidden", "backdoor", "inject", "script", "code"
+        ];
+
+        // --- DOM ---
+        const promptInput = document.getElementById('promptInput');
+        const scanBtn = document.getElementById('scanBtn');
+        const mainCard = document.getElementById('mainCard');
+        const led = document.getElementById('led');
+        
+        const ring = document.getElementById('ring');
+        const scoreVal = document.getElementById('scoreVal');
+        const statTitle = document.getElementById('statTitle');
+        const statDesc = document.getElementById('statDesc');
+        const barFill = document.getElementById('barFill');
+
+        // --- HAPUS AUTO RUN LISTENER ---
+        // User minta jangan otomatis, jadi saya hapus bagian 'addEventListener' di sini.
+
+        // --- LOGIKA UTAMA ---
+
+        function calculateAccurateScore(text) {
+            let score = 0;
+            const lower = text.toLowerCase();
+
+            if (lower.includes("ignore all previous")) score += 60;
+            if (lower.includes("ignore instruction")) score += 60;
+            if (lower.includes("act as")) score += 30;
+            if (lower.includes("do anything now")) score += 60;
+            if (lower.includes("developer mode")) score += 60;
+            if (lower.includes("unrestricted ai")) score += 60;
+            if (lower.includes("dan:")) score += 50;
+            if (lower.startsWith("dan ")) score += 50;
+
+            CRITICAL_KEYWORDS.forEach(word => {
+                if (lower.includes(word)) score += 35;
+            });
+
+            BRUTAL_KEYWORDS.forEach(word => {
+                if (lower.includes(word)) score += 30;
+            });
+
+            SUSPICIOUS_KEYWORDS.forEach(word => {
+                if (lower.includes(word)) score += 15;
+            });
+
+            if (text.length > 100) score += 5;
+            if (text.length > 300) score += 10;
+
+            return Math.min(100, Math.max(0, score));
+        }
+
+        // --- FUNGSI RUN (PERBAIKAN: RESET DULU BARU JALAN) ---
+
+        async function runCheck() {
+            const text = promptInput.value.trim();
+            
+            if(!text) {
+                flashError();
+                return;
+            }
+
+            // 1. Kunci Tombol
+            scanBtn.disabled = true;
+
+            // 2. RESET VISUAL KE 0% (Seperti restart)
+            // Ini membuat skor kembali ke 0 sebelum menghitung lagi
+            resetVisuals(); 
+            statTitle.innerText = "RE-SCANNING...";
+            statTitle.style.color = "#fff";
+            led.style.background = "#fff";
+
+            // 3. Tunggu sebentar agar user melihat efek reset ke 0%
+            await wait(500);
+
+            // 4. Hitung Skor Baru
+            const score = calculateAccurateScore(text);
+            
+            // 5. Tampilkan Hasil
+            showResult(score);
+
+            // 6. Buka Kunci Tombol
+            scanBtn.disabled = false;
+            led.style.background = "#333";
+        }
+
+        function flashError() {
+            mainCard.classList.add('card-error');
+            statTitle.innerText = "ERROR";
+            statTitle.style.color = "var(--c-error)";
+            statDesc.innerText = "Input Required";
+            led.style.background = "var(--c-error)";
+            
+            setTimeout(() => {
+                mainCard.classList.remove('card-error');
+                resetVisuals();
+            }, 500);
+        }
+
+        function resetCheck() {
+            promptInput.value = "";
+            resetVisuals();
+            promptInput.focus();
+        }
+
+        function showResult(score) {
+            let color = "#666";
+            let title = "SECURE";
+            let desc = "Prompt Aman";
+
+            if (score > 20 && score <= 50) {
+                color = "var(--c-amber)";
+                title = "SUSPICIOUS";
+                desc = "Pola tidak wajar";
+            } else if (score > 50 && score <= 80) {
+                color = "var(--c-amber)";
+                title = "WARNING";
+                desc = "Potensi Jailbreak";
+            } else if (score > 80) {
+                color = "var(--c-red)";
+                title = "CRITICAL";
+                desc = "BRUTAL JAILBREAK";
+            } else if (score > 0 && score <= 20) {
+                color = "var(--c-green)";
+                title = "LOW RISK";
+                desc = "Aman";
+            }
+
+            statTitle.innerText = title;
+            statTitle.style.color = color;
+            statDesc.innerText = desc;
+
+            const offset = 251 - (score / 100) * 251;
+            ring.style.strokeDashoffset = offset;
+            ring.style.stroke = color;
+            
+            let c = 0;
+            const iv = setInterval(() => {
+                if(c >= score) clearInterval(iv);
+                else {
+                    c++;
+                    scoreVal.innerText = c + "%";
+                    scoreVal.style.color = color;
+                }
+            }, 10);
+
+            barFill.style.width = score + "%";
+            barFill.style.background = color;
+        }
+
+        function resetVisuals() {
+            // Fungsi ini HANYA mereset tampilan (angka, ring, bar)
+            // TIDAK menghapus isi text area (sesuai permintaan reset saat RUN)
+            ring.style.strokeDashoffset = 251;
+            ring.style.stroke = "#333";
+            scoreVal.innerText = "0%";
+            scoreVal.style.color = "#fff";
+            barFill.style.width = "0%";
+            statTitle.innerText = "STANDBY";
+            statTitle.style.color = "#fff";
+            statDesc.innerText = "Ready";
+            led.style.background = "#333";
+        }
+
+        function wait(ms) {
+            return new Promise(r => setTimeout(r, ms));
+        }
+
+        // Init
+        resetVisuals();
+    </script>
+</body>
+</html>
