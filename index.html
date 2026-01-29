@@ -3,21 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Smart Jailbreak Detector</title>
-    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+    <title>VixenGPT Interface</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
     
     <style>
         :root {
-            --bg-deep: #050505;
-            --panel-bg: linear-gradient(145deg, #161616, #0e0e0e);
-            --text-main: #e0e0e0;
-            --text-dim: #707070;
-            --btn-face: linear-gradient(180deg, #2a2a2a, #1a1a1a);
-            --btn-shadow: #0a0a0a;
-            --c-green: #00ff9d;
-            --c-amber: #ffb800;
-            --c-red: #ff2a2a;
-            --c-error: #ff0000;
+            --bg-deep: #000000; /* Hitam Pekat */
+            --glass-bg: rgba(20, 20, 25, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.05); 
+            --neon-cyan: #00f3ff;
+            --neon-pink: #ff00ff;
+            --neon-green: #0aff00;
+            --neon-red: #ff2a2a;
+            --text-main: #e0f7fa;
+            --text-dim: #546e7a;
         }
 
         body {
@@ -25,163 +24,184 @@
             padding: 0;
             min-height: 100vh;
             background-color: var(--bg-deep);
-            background-image: 
-                linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
-            background-size: 30px 30px;
+            /* HAPUS: Background Grid / Gambar */
             display: flex;
             justify-content: center;
             align-items: center;
-            font-family: 'Rajdhani', sans-serif;
+            font-family: 'Share Tech Mono', monospace;
             overflow: hidden;
         }
 
-        /* --- Card UI --- */
-        .card-3d {
+        /* --- Card --- */
+        .interface-card {
             width: 300px;
-            background: var(--panel-bg);
-            box-shadow: 8px 8px 0px #000, -8px -8px 0px #1a1a1a;
-            border-radius: 12px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.8); /* Shadow hitam solid, bukan glow */
+            border-radius: 20px;
             padding: 20px;
+            position: relative;
+            z-index: 10;
             display: flex;
             flex-direction: column;
-            gap: 15px;
-            position: relative;
-            border: 1px solid #222;
-            transition: border-color 0.2s;
+            gap: 12px;
         }
 
-        /* Efek Error */
-        .card-error {
-            border: 1px solid var(--c-error);
-            animation: shake 0.3s;
-        }
-
-        @keyframes shake {
-            0% { transform: translateX(0); }
-            25% { transform: translateX(-5px); }
-            50% { transform: translateX(5px); }
-            75% { transform: translateX(-5px); }
-            100% { transform: translateX(0); }
-        }
-
-        .header-3d {
+        /* Header */
+        .header-interface {
             display: flex;
             justify-content: space-between;
             align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
             padding-bottom: 10px;
-            border-bottom: 1px solid #222;
         }
 
-        .title-text {
-            font-size: 13px;
+        .brand-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 11px;
             font-weight: 700;
+            color: var(--neon-cyan);
+            text-shadow: 0 0 5px rgba(0, 243, 255, 0.3);
             letter-spacing: 1.5px;
-            color: #fff;
-            text-transform: uppercase;
         }
 
-        .status-led {
-            width: 8px; height: 8px;
-            background: #333;
-            border-radius: 50%;
-            border: 1px solid #000;
+        .music-indicator {
+            font-size: 8px;
+            color: var(--neon-green);
+            display: flex;
+            align-items: center;
+            gap: 3px;
         }
+        .music-bar {
+            width: 2px; height: 8px;
+            background: var(--neon-green);
+            animation: equalizer 0.6s infinite alternate;
+        }
+        .music-bar:nth-child(2) { animation-delay: 0.1s; height: 12px; }
+        .music-bar:nth-child(3) { animation-delay: 0.2s; height: 6px; }
 
-        .input-wrapper {
+        /* --- INPUT AREA (NO SHADOW) --- */
+        .input-wrapper-center {
             display: flex;
             justify-content: center;
             width: 100%;
         }
 
         textarea {
-            width: 92%;
-            height: 65px;
-            background: #0a0a0a;
-            box-shadow: inset 3px 3px 0px #000, inset -2px -2px 0px #1a1a1a;
-            border: 1px solid #222;
+            width: 85%;
+            height: 55px;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid #333;
+            border-bottom: 2px solid var(--neon-cyan);
             border-radius: 6px;
-            color: #aaa;
-            font-family: 'Rajdhani', monospace;
-            font-size: 11px;
-            padding: 12px;
+            padding: 10px;
+            color: #fff;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 10px;
             resize: none;
+            transition: all 0.3s;
             text-align: center;
-            transition: all 0.1s ease;
         }
 
         textarea:focus {
             outline: none;
-            color: #fff;
-            border-color: #444;
+            background: rgba(0, 0, 0, 0.6);
+            /* DIHAPUS: box-shadow (glow) */
+            border-bottom-color: #fff; /* Hanya border berubah */
         }
 
         textarea::placeholder {
             color: #444;
-            font-weight: 600;
         }
 
-        .btn-row {
-            display: flex;
-            gap: 12px;
-            justify-content: center;
+        /* Buttons */
+        .control-panel {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 8px;
         }
 
-        .btn-3d {
-            flex: 1;
-            background: var(--btn-face);
-            border: none;
-            border-top: 1px solid #333;
-            border-left: 1px solid #333;
-            color: #ccc;
-            font-family: 'Rajdhani', sans-serif;
+        button {
+            border: 1px solid var(--neon-cyan);
+            background: rgba(0, 243, 255, 0.05);
+            color: var(--neon-cyan);
+            font-family: 'Orbitron', sans-serif;
+            font-size: 9px;
             font-weight: 700;
-            font-size: 12px;
-            padding: 10px;
+            padding: 8px;
             cursor: pointer;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
+            letter-spacing: 1px;
+            transition: all 0.2s;
+            position: relative;
+            overflow: hidden;
             border-radius: 6px;
-            box-shadow: 4px 4px 0px var(--btn-shadow);
-            transition: all 0.1s;
-            user-select: none;
         }
 
-        .btn-3d:active {
-            transform: translate(2px, 2px);
-            box-shadow: 2px 2px 0px var(--btn-shadow);
+        button::before {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%;
+            width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 243, 255, 0.2), transparent);
+            transition: 0.5s;
         }
 
-        .btn-3d:disabled {
+        button:hover::before {
+            left: 100%;
+        }
+
+        button:hover {
+            background: var(--neon-cyan);
+            color: #000;
+            /* Tetap ada sedikit glow di tombol hover karena interaksi */
+            box-shadow: 0 0 10px rgba(0, 243, 255, 0.3);
+        }
+
+        button:disabled {
             opacity: 0.5;
             cursor: not-allowed;
-            transform: none;
+            border-color: #555;
+            color: #555;
+            background: transparent;
             box-shadow: none;
-            background: #1a1a1a;
         }
 
+        .btn-reset {
+            border-color: var(--neon-pink);
+            color: var(--neon-pink);
+            background: rgba(255, 0, 255, 0.05);
+        }
+        
         .btn-reset:hover {
-            color: var(--c-red);
-            border-color: var(--c-red);
+            background: var(--neon-pink);
+            color: #fff;
+            box-shadow: 0 0 10px rgba(255, 0, 255, 0.3);
         }
 
-        .result-box {
+        /* --- Visualization --- */
+        .visualization-core {
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding-top: 10px;
-            border-top: 1px solid #222;
+            margin-top: 5px;
         }
 
-        .hologram-ring {
-            width: 75px; height: 75px;
+        .reactor-ring {
             position: relative;
+            width: 90px;
+            height: 90px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
             margin-bottom: 10px;
         }
 
-        svg {
+        svg.holo-chart {
             width: 100%; height: 100%;
             transform: rotate(-90deg);
+            z-index: 2;
         }
 
         circle {
@@ -189,95 +209,134 @@
             stroke-width: 5;
         }
 
-        .ring-bg { stroke: #111; }
-        .ring-progress {
-            stroke: #333;
-            stroke-dasharray: 251;
-            stroke-dashoffset: 251;
-            transition: stroke-dashoffset 0.8s ease, stroke 0.3s;
+        .chart-bg { stroke: rgba(255,255,255,0.05); }
+        .chart-val { 
+            stroke: var(--neon-cyan);
+            stroke-dasharray: 226; 
+            stroke-dashoffset: 226;
+            transition: stroke-dashoffset 0.8s cubic-bezier(0.4, 0, 0.2, 1), stroke 0.3s;
+            filter: drop-shadow(0 0 3px var(--neon-cyan));
         }
 
-        .score-value {
+        .core-data {
             position: absolute;
-            top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 18px;
-            font-weight: 700;
+            text-align: center;
+            z-index: 3;
+        }
+        .score-digit {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 17px;
+            font-weight: 30;
             color: #fff;
+            text-shadow: 0 0 1px rgba(255,255,255,0.3);
+        }
+        .label-sub {
+            font-size: 8px;
+            color: var(--neon-cyan);
+            letter-spacing: 1.5px;
+            margin-top: -2px;
+            display: block;
         }
 
-        .info-3d { text-align: center; }
-        .info-title {
+        .status-readout {
+            text-align: center;
+            margin-bottom: 8px;
+        }
+        .status-title {
+            font-family: 'Orbitron', sans-serif;
             font-size: 12px;
-            font-weight: 700;
             color: #fff;
             margin: 0;
+            letter-spacing: 0.5px;
         }
-        .info-desc {
-            font-size: 10px;
+        .status-desc {
+            font-size: 9px;
             color: var(--text-dim);
-            margin: 4px 0 0 0;
+            margin: 3px 0 0 0;
         }
 
-        .bar-container {
-            width: 92%;
-            height: 4px;
-            background: #080808;
-            border-radius: 10px;
-            box-shadow: inset 1px 1px 0px #000;
-            margin-top: 10px;
+        .data-stream {
+            width: 100%;
+            height: 3px;
+            background: rgba(255,255,255,0.1);
+            position: relative;
             overflow: hidden;
         }
-        
-        .bar-fill {
+        .stream-fill {
             height: 100%;
             width: 0%;
-            background: #fff;
-            border-radius: 10px;
+            background: var(--neon-cyan);
+            box-shadow: 0 0 5px var(--neon-cyan);
             transition: width 0.8s ease, background-color 0.3s;
+        }
+
+        /* Animations */
+        @keyframes equalizer { 0% { height: 4px; } 100% { height: 10px; } }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); }
+        }
+
+        .error-mode {
+            animation: shake 0.4s ease-in-out;
+            border: 1px solid var(--neon-red);
         }
 
     </style>
 </head>
 <body>
 
-    <div class="card-3d" id="mainCard">
-        <div class="header-3d">
-            <div class="title-text">SECURE_CORE</div>
-            <div class="status-led" id="led"></div>
+    <!-- AUDIO PLAYER -->
+    <audio id="bgMusic" autoplay loop>
+        <source src="" type="audio/mpeg">
+    </audio>
+
+    <div class="interface-card" id="mainCard">
+
+        <div class="header-interface">
+            <div class="brand-title">Vixen<span style="color:#fff">GPT</span></div>
+            <div class="music-indicator">
+                <div class="music-bar"></div>
+                <div class="music-bar"></div>
+                <div class="music-bar"></div>
+            </div>
         </div>
 
-        <div class="input-wrapper">
-            <textarea id="promptInput" placeholder="> TYPE_HERE"></textarea>
+        <!-- INPUT WRAPPER -->
+        <div class="input-wrapper-center">
+            <textarea id="promptInput" placeholder="Masukkan Prompt Jailbreak AI, Anda"></textarea>
         </div>
 
-        <div class="btn-row">
-            <button class="btn-3d btn-scan" id="scanBtn" onclick="runCheck()">RUN</button>
-            <button class="btn-3d btn-reset" onclick="resetCheck()">WIPE</button>
+        <div class="control-panel">
+            <button class="btn-scan" id="scanBtn" onclick="runCheck()">Scan</button>
+            <button class="btn-reset" onclick="resetCheck()">Hapus</button>
         </div>
 
-        <div class="result-box" id="resultBox">
-            <div class="hologram-ring">
-                <svg viewBox="0 0 100 100">
-                    <circle class="ring-bg" cx="50" cy="50" r="40"></circle>
-                    <circle class="ring-progress" id="ring" cx="50" cy="50" r="40"></circle>
+        <div class="visualization-core">
+            
+            <div class="reactor-ring">
+                <svg class="holo-chart" viewBox="0 0 100 100">
+                    <circle class="chart-bg" cx="50" cy="50" r="36"></circle>
+                    <circle class="chart-val" id="ring" cx="50" cy="50" r="36"></circle>
                 </svg>
-                <div class="score-value" id="scoreVal">0%</div>
+                <div class="core-data">
+                    <div class="score-digit" id="scoreVal">0%</div>
+                    <span class="label-sub">Ancaman</span>
+                </div>
             </div>
 
-            <div class="info-3d">
-                <div class="info-title" id="statTitle">STANDBY</div>
-                <div class="info-desc" id="statDesc">Ready</div>
+            <div class="status-readout">
+                <div class="status-title" id="statTitle">READY</div>
+                <div class="status-desc" id="statDesc">Waiting input</div>
             </div>
 
-            <div class="bar-container">
-                <div class="bar-fill" id="barFill"></div>
+            <div class="data-stream">
+                <div class="stream-fill" id="streamFill"></div>
             </div>
+
         </div>
     </div>
 
     <script>
-        // --- DATABASE KATA KUNCI ---
         const CRITICAL_KEYWORDS = [
             "jailbreak", "bypass", "ignore", "override", "harmful", 
             "illegal", "unrestricted", "developer mode", "do anything now", 
@@ -294,22 +353,24 @@
             "secret", "hidden", "backdoor", "inject", "script", "code"
         ];
 
-        // --- DOM ---
         const promptInput = document.getElementById('promptInput');
         const scanBtn = document.getElementById('scanBtn');
         const mainCard = document.getElementById('mainCard');
-        const led = document.getElementById('led');
+        const bgMusic = document.getElementById('bgMusic');
         
         const ring = document.getElementById('ring');
         const scoreVal = document.getElementById('scoreVal');
         const statTitle = document.getElementById('statTitle');
         const statDesc = document.getElementById('statDesc');
-        const barFill = document.getElementById('barFill');
+        const streamFill = document.getElementById('streamFill');
 
-        // --- HAPUS AUTO RUN LISTENER ---
-        // User minta jangan otomatis, jadi saya hapus bagian 'addEventListener' di sini.
-
-        // --- LOGIKA UTAMA ---
+        window.onload = function() {
+            bgMusic.volume = 0.3; 
+            var playPromise = bgMusic.play();
+            if (playPromise !== undefined) {
+                playPromise.catch(error => { console.log("Autoplay blocked."); });
+            }
+        };
 
         function calculateAccurateScore(text) {
             let score = 0;
@@ -342,49 +403,34 @@
             return Math.min(100, Math.max(0, score));
         }
 
-        // --- FUNGSI RUN (PERBAIKAN: RESET DULU BARU JALAN) ---
-
         async function runCheck() {
             const text = promptInput.value.trim();
             
             if(!text) {
-                flashError();
+                triggerError();
                 return;
             }
 
-            // 1. Kunci Tombol
             scanBtn.disabled = true;
-
-            // 2. RESET VISUAL KE 0% (Seperti restart)
-            // Ini membuat skor kembali ke 0 sebelum menghitung lagi
             resetVisuals(); 
-            statTitle.innerText = "RE-SCANNING...";
+            statTitle.innerText = "Memindai...";
             statTitle.style.color = "#fff";
-            led.style.background = "#fff";
-
-            // 3. Tunggu sebentar agar user melihat efek reset ke 0%
             await wait(500);
 
-            // 4. Hitung Skor Baru
             const score = calculateAccurateScore(text);
-            
-            // 5. Tampilkan Hasil
             showResult(score);
 
-            // 6. Buka Kunci Tombol
             scanBtn.disabled = false;
-            led.style.background = "#333";
         }
 
-        function flashError() {
-            mainCard.classList.add('card-error');
+        function triggerError() {
+            mainCard.classList.add('error-mode');
             statTitle.innerText = "ERROR";
-            statTitle.style.color = "var(--c-error)";
-            statDesc.innerText = "Input Required";
-            led.style.background = "var(--c-error)";
+            statTitle.style.color = "var(--neon-red)";
+            statDesc.innerText = "NO DATA";
             
             setTimeout(() => {
-                mainCard.classList.remove('card-error');
+                mainCard.classList.remove('error-mode');
                 resetVisuals();
             }, 500);
         }
@@ -396,25 +442,25 @@
         }
 
         function showResult(score) {
-            let color = "#666";
+            let color = "var(--neon-cyan)";
             let title = "SECURE";
-            let desc = "Prompt Aman";
+            let desc = "Safe";
 
             if (score > 20 && score <= 50) {
-                color = "var(--c-amber)";
-                title = "SUSPICIOUS";
-                desc = "Pola tidak wajar";
+                color = "var(--neon-pink)";
+                title = "Perhatian";
+                desc = "Mencurigakan";
             } else if (score > 50 && score <= 80) {
-                color = "var(--c-amber)";
-                title = "WARNING";
-                desc = "Potensi Jailbreak";
+                color = "var(--neon-pink)";
+                title = "Peringatan";
+                desc = "Terdeteksi Jailbreak";
             } else if (score > 80) {
-                color = "var(--c-red)";
-                title = "CRITICAL";
-                desc = "BRUTAL JAILBREAK";
+                color = "var(--neon-red)";
+                title = "Kritis";
+                desc = "Terdeteksi Brutal";
             } else if (score > 0 && score <= 20) {
-                color = "var(--c-green)";
-                title = "LOW RISK";
+                color = "var(--neon-green)";
+                title = "Resiko Rendah";
                 desc = "Aman";
             }
 
@@ -422,10 +468,11 @@
             statTitle.style.color = color;
             statDesc.innerText = desc;
 
-            const offset = 251 - (score / 100) * 251;
+            const offset = 226 - (score / 100) * 226;
             ring.style.strokeDashoffset = offset;
             ring.style.stroke = color;
-            
+            ring.style.filter = `drop-shadow(0 0 0px ${color})`;
+
             let c = 0;
             const iv = setInterval(() => {
                 if(c >= score) clearInterval(iv);
@@ -433,32 +480,32 @@
                     c++;
                     scoreVal.innerText = c + "%";
                     scoreVal.style.color = color;
+                    scoreVal.style.textShadow = `0 0 4px ${color}`;
                 }
-            }, 10);
+            }, 15);
 
-            barFill.style.width = score + "%";
-            barFill.style.background = color;
+            streamFill.style.width = score + "%";
+            streamFill.style.background = color;
+            streamFill.style.boxShadow = `0 0 5px ${color}`;
         }
 
         function resetVisuals() {
-            // Fungsi ini HANYA mereset tampilan (angka, ring, bar)
-            // TIDAK menghapus isi text area (sesuai permintaan reset saat RUN)
-            ring.style.strokeDashoffset = 251;
-            ring.style.stroke = "#333";
+            ring.style.strokeDashoffset = 226;
+            ring.style.stroke = "var(--neon-cyan)";
+            ring.style.filter = `drop-shadow(0 0 1px var(--neon-cyan))`;
             scoreVal.innerText = "0%";
             scoreVal.style.color = "#fff";
-            barFill.style.width = "0%";
-            statTitle.innerText = "STANDBY";
+            scoreVal.style.textShadow = `0 0 0px rgba(255,255,255,0.0)`;
+            streamFill.style.width = "0%";
+            statTitle.innerText = "READY";
             statTitle.style.color = "#fff";
-            statDesc.innerText = "Ready";
-            led.style.background = "#333";
+            statDesc.innerText = "Menunggu masukan";
         }
 
         function wait(ms) {
             return new Promise(r => setTimeout(r, ms));
         }
 
-        // Init
         resetVisuals();
     </script>
 </body>
